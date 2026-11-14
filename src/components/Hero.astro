@@ -1,0 +1,14 @@
+---
+import { content } from '../data/content';
+import NetworkBackground from './NetworkBackground.astro';
+---
+<section id="home" class="hero">
+ <NetworkBackground />
+ <div class="wrap hero-content">
+  <p class="eyebrow identity">{content.person.identity}</p>
+  <h1>{content.person.name}</h1>
+  <p class="hero-statement">{content.hero.statement}</p>
+  <p class="hero-values">{content.hero.values}</p>
+  <div class="hero-links"><a href="#research">{content.hero.researchLink}<span aria-hidden="true"> ↘</span></a><a href="#contact">{content.hero.contactLink}<span aria-hidden="true"> ↗</span></a></div>
+ </div>
+</section>

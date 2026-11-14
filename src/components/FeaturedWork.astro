@@ -1,0 +1,15 @@
+---
+import { content } from '../data/content';
+import PaperCard from './PaperCard.astro';
+import SocialCostVisual from './visuals/SocialCostVisual.astro';
+import TrailPersonaVisual from './visuals/TrailPersonaVisual.astro';
+import OutOfSyncVisual from './visuals/OutOfSyncVisual.astro';
+const { workshop } = content;
+---
+<section id="research" class="section wrap" aria-labelledby="research-heading">
+ <div class="section-intro"><h2 id="research-heading">{content.researchIntro.heading}</h2><p>{content.researchIntro.text}</p></div>
+ {content.papers.map((paper, index) => <PaperCard paper={paper} index={index}>
+  {paper.id === 'social-cost' ? <SocialCostVisual paper={paper} /> : paper.id === 'trail' ? <TrailPersonaVisual paper={paper} /> : <OutOfSyncVisual paper={paper} />}
+ </PaperCard>)}
+ <article class="workshop"><p class="eyebrow">{workshop.category}</p><h3>{workshop.title}</h3><p class="workshop-subtitle">{workshop.subtitle}</p><p class="muted">{workshop.role}</p><p>{workshop.summary}</p><a href={workshop.href}>{workshop.link}<span aria-hidden="true"> ↗</span></a></article>
+</section>

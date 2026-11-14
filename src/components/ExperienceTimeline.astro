@@ -1,0 +1,7 @@
+---
+import { content } from '../data/content';
+---
+<section id="experience" class="section wrap section-split" aria-labelledby="experience-heading">
+ <h2 id="experience-heading">{content.experienceHeading}</h2>
+ <ol class="timeline">{content.experience.map(item => <li><time datetime={item.iso}>{item.date}</time><h3>{item.title}</h3><p>{item.description}</p></li>)}</ol>
+</section>

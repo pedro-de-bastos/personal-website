@@ -1,0 +1,29 @@
+---
+import { content, socialComparisons, type Paper } from '../../data/content';
+interface Props { paper: Paper }
+const { paper } = Astro.props;
+const u = content.ui;
+---
+<figure class="research-visual social-visual" data-social aria-labelledby="social-visual-heading" data-uncertain-label={u.uncertain} data-trajectory-label={u.trajectory} data-summary-suffix={u.summarySuffix} data-human={u.teamHuman} data-ai-summary={u.teamAI}>
+ <h4 id="social-visual-heading">{paper.visualTitle}</h4>
+ <p class="disclaimer">{u.disclaimer}</p>
+ <div class="team-section">
+  <div class="control-heading"><h5>{u.teamTitle}</h5><button hidden data-enhance data-team-toggle aria-pressed="false" data-add={u.addAI} data-remove={u.removeAI}>{u.addAI}</button></div>
+  <div class="team-network" aria-hidden="true">
+   <div class="team-person person-one"><span class="belonging-halo"></span><span class="student-node"></span><span class="node-label">{u.student}</span></div>
+   <div class="team-person person-two"><span class="belonging-halo"></span><span class="student-node"></span><span class="node-label">{u.student}</span></div>
+   <div class="team-person person-three"><span class="belonging-halo"></span><span class="student-node"></span><span class="node-label human-label">{u.student}</span><span class="node-label ai-label">{u.ai}</span></div>
+  </div>
+  <p class="note">{u.teamDisclaimer} {u.halo}</p><p class="note">{u.teamEncoding}</p><p class="note">{u.seats}</p>
+ </div>
+ <div class="interactive-explorer" hidden data-enhance>
+  <div class="select-grid"><label>{u.comparison}<select data-comparison>{socialComparisons.map(c => <option value={c.id}>{c.label}</option>)}</select></label><label>{u.measure}<select data-measure></select></label></div>
+  <div class="direction-board" aria-hidden="true"><div>{u.higher}</div><div>{u.lower}</div><div>{u.noClear}</div><span class="direction-marker"></span></div>
+  <p class="special-result-label" data-special-label hidden></p>
+  <p class="finding-result"><strong data-result-label>{u.lower}</strong><span data-measure-label></span></p>
+ </div>
+ <p class="note">{u.direction}</p><p class="note">{u.wholeTeam}</p><p class="note" data-temporal-note hidden>{u.temporal}</p>
+ <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{u.teamHuman}</p>
+ <details open data-findings><summary>{u.allComparisons}</summary><table role="table"><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">{u.comparison}</th><th role="columnheader" scope="col">{u.measure}</th><th role="columnheader" scope="col">{u.result}</th></tr></thead><tbody role="rowgroup">{socialComparisons.map(c => c.findings.map(f => <tr role="row" data-comparison-id={c.id} data-comparison-label={c.label} data-direction={f.direction}><td role="cell" data-column={u.comparison}>{c.label}</td><th role="rowheader" scope="row">{f.measureLabel}</th><td role="cell" data-column={u.result}>{f.resultLabel}</td></tr>))}</tbody></table></details>
+ <figcaption>{paper.caption} <a href={paper.href}>{u.paperLink}</a></figcaption>
+</figure>

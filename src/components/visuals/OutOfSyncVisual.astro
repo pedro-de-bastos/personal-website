@@ -1,0 +1,18 @@
+---
+import { content, syncPanels, type Paper } from '../../data/content';
+interface Props { paper: Paper }
+const { paper } = Astro.props;
+const u = content.ui;
+---
+<figure class="research-visual sync-visual" data-sync data-first={u.firstSummary} data-last={u.lastSummary} data-first-value={u.firstValue} data-last-value={u.lastValue} aria-labelledby="sync-visual-heading">
+ <h4 id="sync-visual-heading">{paper.visualTitle}</h4><p class="disclaimer">{u.disclaimer}</p>
+ <div hidden data-enhance>
+  <label class="range-label" for="session-range">{u.rangeLabel}</label><input id="session-range" type="range" min="0" max="1" step="1" value="0" aria-valuetext={u.firstValue} /><div class="range-endpoints"><span>{u.first}</span><span>{u.last}</span></div>
+  <p class="session-current" data-session-current>{u.firstValue}</p>
+  <div class="sync-panels">{syncPanels.map(p => <div class="sync-panel" data-switches={String(p.switches)}><h5>{p.label}</h5><div class="ordering-board"><span class="lane-label">{u.higherLane}</span><span class="lane-label">{u.lowerLane}</span><span class="lane-agent cognitive" data-agent="cognitive"><span class="agent-symbol cognitive" aria-hidden="true"></span>{u.cognitiveAgent}</span><span class="lane-agent supportive" data-agent="supportive"><span class="agent-symbol supportive" aria-hidden="true"></span>{u.supportiveAgent}</span></div></div>)}</div>
+ </div>
+ {u.syncNotes.map(n => <p class="note">{n}</p>)}
+ <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{u.firstSummary}</p>
+ <details open data-findings><summary>{u.allComparisons}</summary><table role="table"><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">{u.measure}</th><th role="columnheader" scope="col">{u.first}</th><th role="columnheader" scope="col">{u.last}</th></tr></thead><tbody role="rowgroup">{syncPanels.map(p => <tr role="row"><th role="rowheader" scope="row">{p.label}</th><td role="cell" data-column={u.first}>{u.cognitiveAgent}: {u.higher}; {u.supportiveAgent}: {u.lower}</td><td role="cell" data-column={u.last}>{p.switches ? u.supportiveAgent : u.cognitiveAgent}: {u.higher}; {p.switches ? u.cognitiveAgent : u.supportiveAgent}: {u.lower}</td></tr>)}</tbody></table></details>
+ <figcaption>{paper.caption} <a href={paper.href}>{u.paperLink}</a></figcaption>
+</figure>

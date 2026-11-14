@@ -1,0 +1,25 @@
+---
+import { content } from '../data/content';
+import { localPath } from '../lib/paths';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/visuals.css';
+const canonical = new URL(localPath(), Astro.site);
+---
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={content.meta.description} />
+  <meta name="theme-color" content="#081522" />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" type="image/svg+xml" href={localPath('favicon.svg')} />
+  <title>{content.meta.title}</title>
+ </head>
+ <body><a class="skip-link" href="#main-content">{content.ui.skip}</a><slot /></body>
+</html>
+<script>
+ import '../scripts/research-visuals';
+ import '../scripts/network';
+</script>

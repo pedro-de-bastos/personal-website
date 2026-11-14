@@ -1,0 +1,15 @@
+---
+import { content, type Paper } from '../data/content';
+interface Props { paper: Paper; index: number }
+const { paper, index } = Astro.props;
+---
+<article class="paper" aria-labelledby={`${paper.id}-title`}>
+ <div class="paper-copy">
+  <p class="eyebrow"><span class="paper-number" aria-hidden="true">0{index + 1}</span>{paper.status}</p>
+  <h3 id={`${paper.id}-title`}>{paper.title}</h3>
+  <p class="authors">{paper.authors.map((author, i) => <>{i > 0 && (i === paper.authors.length - 1 ? ', & ' : ', ')}{author.isPedro ? <strong>{author.display}</strong> : author.display}</> )}</p>
+  <p>{paper.blurb}</p>
+  <a href={paper.href}>{content.ui.paperLink}<span aria-hidden="true"> ↗</span></a>
+ </div>
+ <slot />
+</article>

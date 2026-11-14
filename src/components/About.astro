@@ -1,0 +1,7 @@
+---
+import { content } from '../data/content';
+---
+<section id="about" class="section wrap section-split" aria-labelledby="about-heading">
+ <h2 id="about-heading">{content.about.heading}</h2>
+ <div class="prose">{content.about.paragraphs.map(p => <p>{p}</p>)}</div>
+</section>

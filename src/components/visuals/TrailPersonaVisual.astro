@@ -1,0 +1,18 @@
+---
+import { content, personas, trailFindings, flowSteps, type Paper } from '../../data/content';
+interface Props { paper: Paper }
+const { paper } = Astro.props;
+const u = content.ui;
+---
+<figure class="research-visual trail-visual" data-trail data-summary-suffix={u.personaSuffix} aria-labelledby="trail-visual-heading">
+ <h4 id="trail-visual-heading">{paper.visualTitle}</h4><p class="disclaimer">{u.disclaimer}</p>
+ <div hidden data-enhance>
+  <fieldset><legend>{u.personaLegend}</legend><div class="persona-options">{personas.map((p, i) => <label class="persona-option"><input type="radio" name="persona" value={p.id} checked={i === 0} /><span class:list={['agent-symbol', p.id]} aria-hidden="true"></span><span>{p.label}<small>{p.description}</small></span></label>)}</div></fieldset>
+  <p class="note">{u.personaCompare}</p><ul class="persona-results">{trailFindings.map(f => <li><span>{f.measureLabel}</span><strong data-cognitive={f.cognitive} data-supportive={f.supportive}><span class="result-arrow" aria-hidden="true">↑</span><span class="result-word">{f.cognitive}</span></strong></li>)}</ul>
+ </div>
+ <div class="flow-section"><h5>{u.flowTitle}</h5><ol class="experiment-flow">{flowSteps.map((s, i) => <li><button hidden data-enhance data-flow-step={i} aria-pressed={i === 0 ? 'true' : 'false'} aria-controls="flow-description"><span aria-hidden="true">{i + 1}</span>{' '}{s.label}</button><span class="flow-fallback">{s.label}: {s.detail}</span></li>)}</ol><p id="flow-description" data-flow-description hidden data-enhance>{flowSteps[0]!.detail}</p><div hidden>{flowSteps.map((s, i) => <span data-flow-detail={i}>{s.detail}</span>)}</div><p class="note">{u.flowNote}</p></div>
+ <p class="note">{u.personaNote}</p><p class="note">{u.personaScope}</p>
+ <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{u.personaNote}</p>
+ <details open data-findings><summary>{u.allComparisons}</summary><table role="table"><thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">{u.measure}</th>{personas.map(p => <th role="columnheader" scope="col">{p.label}</th>)}</tr></thead><tbody role="rowgroup">{trailFindings.map(f => <tr role="row"><th role="rowheader" scope="row">{f.measureLabel}</th><td role="cell" data-column={personas[0].label}>{f.cognitive}</td><td role="cell" data-column={personas[1].label}>{f.supportive}</td></tr>)}</tbody></table></details>
+ <figcaption>{paper.caption} <a href={paper.href}>{u.paperLink}</a></figcaption>
+</figure>

@@ -1,0 +1,7 @@
+---
+import { content } from '../data/content';
+---
+<footer id="contact" class="section wrap section-split">
+ <h2>{content.contact.heading}</h2>
+ <div class="prose"><p>{content.contact.text}</p><a class="email" href={`mailto:${content.person.email}`} aria-label={`${content.contact.emailLabel}: ${content.person.email}`}>{content.person.email}</a><ul class="profiles">{content.profiles.map(profile => <li><a href={profile.href}>{profile.label}<span aria-hidden="true"> ↗</span></a></li>)}</ul></div>
+</footer>
