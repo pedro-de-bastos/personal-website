@@ -37,3 +37,12 @@ The verifier checks generated content, approved authors and links, forbidden met
 Deployment is manual only. The Pages workflow is stored at `deploy/github-pages-workflow.yml` (the box's GitHub token lacks the `workflow` scope, so it could not be pushed under `.github/`). To enable it, move it to `.github/workflows/deploy.yml` (e.g., via the GitHub web UI or a token with `workflow` scope). After reviewing the implementation, set repository **Settings → Pages → Source → GitHub Actions**, then run **Deploy personal website** against the reviewed revision. The workflow builds for `/personal-website` and deploys via the Pages artifact actions. There are no push, pull-request, or scheduled triggers. This implementation does not publish the site. Confirm the repository target before dispatch and verify `https://pedro-de-bastos.github.io/personal-website/` afterward. A future domain requires separately updating `SITE_URL`, setting `BASE_PATH=/`, and configuring Pages/DNS.
 
 The About and values copy are drafts for Pedro’s voice. The LinkedIn URL follows the explicit brief and still merits Pedro’s confirmation.
+
+## Publishing without Actions (current method)
+
+The site is served by GitHub Pages from the `gh-pages` branch, which `scripts/publish-gh-pages.sh` builds and pushes:
+
+- `scripts/publish-gh-pages.sh project` publishes the preview at https://pedro-de-bastos.github.io/personal-website/ (base `/personal-website/`, no CNAME).
+- `scripts/publish-gh-pages.sh domain` rebuilds for the root path, writes `CNAME` from `deploy/CNAME` (currently `pedromdb.me`), and sets the Pages custom domain. Point DNS at GitHub Pages first.
+
+`deploy/CNAME` is intentionally not in `public/`, so the preview build does not redirect to an unconfigured domain.

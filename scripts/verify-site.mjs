@@ -4,6 +4,8 @@ import path from 'node:path';
 const arg = process.argv.indexOf('--base');
 const base = (arg < 0 ? '/' : process.argv[arg + 1]).replace(/\/?$/, '/');
 assert(base.startsWith('/'), 'Use an absolute base path');
+const siteArg = process.argv.indexOf('--site');
+const site = (siteArg < 0 ? 'https://pedro-de-bastos.github.io' : process.argv[siteArg + 1]).replace(/\/$/, '');
 const html = await readFile('dist/index.html', 'utf8');
 const decode = s => s.replaceAll('&amp;', '&').replaceAll('&#39;', "'").replaceAll('&quot;', '"').replaceAll('&lt;', '<').replaceAll('&gt;', '>');
 const strip = s => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
@@ -25,7 +27,7 @@ assert.equal((text.match(/Preprint \(arXiv\)/g) || []).length, 2);
 assert.equal((html.match(/<h1[\s>]/g) || []).length, 1);
 assert.equal((html.match(/role="status"/g) || []).length, 3);
 assert.match(html, /<meta name="description" content="Pedro Martins/);
-assert(html.includes(`href="https://pedro-de-bastos.github.io${base}"`), 'Canonical URL must include base');
+assert(html.includes(`href="${site}${base}"`), 'Canonical URL must include base');
 const approvedAuthors = [
  'Nixon, N., Choi, J., Martins de Bastos, P., Samadi, M. A., Park, S., & JaQuay, S.',
  'Samadi, M. A., Martins de Bastos, P., Choi, J., JaQuay, S., Park, S., & Nixon, N.',
@@ -48,7 +50,7 @@ const allowed = new Set([
  'https://doi.org/10.1007/978-3-032-29794-5_21','https://scholar.google.com/citations?user=_rBcP6AAAAAJ',
  'https://orcid.org/0009-0009-8686-7871','https://github.com/pedro-de-bastos',
  'https://www.linkedin.com/in/pedro-martins-de-bastos-31925115b/','mailto:pedrom4@uci.edu',
- `https://pedro-de-bastos.github.io${base}`,
+ `${site}${base}`,
 ]);
 const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
 for (const [, attr, raw] of html.matchAll(/\b(href|src)="([^"]+)"/g)) {
