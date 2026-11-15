@@ -13,6 +13,7 @@ function initNetwork(canvas: HTMLCanvasElement, button: HTMLButtonElement) {
  let seed = 8517;
  const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
  let nodes: Node[] = [], edges: Edge[] = [];
+ let textAreas: { x: number; y: number; width: number; height: number }[] = [];
  let width = 1, height = 1, dpr = 1, simTime = 0, nextEdge = 4;
  let raf = 0, previous = 0, rendered = 0, visible = false, disposed = false, paused = false;
  try { paused = sessionStorage.getItem('network-paused') === 'true'; } catch { /* Storage is optional. */ }
@@ -25,6 +26,11 @@ function initNetwork(canvas: HTMLCanvasElement, button: HTMLButtonElement) {
   const bounds = hero.getBoundingClientRect();
   const oldWidth = width, oldHeight = height;
   width = Math.max(1, bounds.width); height = Math.max(1, bounds.height);
+  // Keep decorative marks clear of text so increased opacity preserves contrast.
+  textAreas = Array.from(hero.querySelectorAll<HTMLElement>('.hero-content > *')).map(element => {
+   const rect = element.getBoundingClientRect();
+   return { x: rect.left - bounds.left - 4, y: rect.top - bounds.top - 4, width: rect.width + 8, height: rect.height + 8 };
+  });
   dpr = Math.min(devicePixelRatio || 1, 2);
   canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -32,7 +38,7 @@ function initNetwork(canvas: HTMLCanvasElement, button: HTMLButtonElement) {
   nodes = nodes.slice(0, count).map(n => ({ ...n, x: n.x / oldWidth * width, y: n.y / oldHeight * height }));
   while (nodes.length < count) {
    const angle = random() * Math.PI * 2, speed = 3 + random() * 5;
-   nodes.push({ x: random() * width, y: random() * height, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 2 + random() });
+   nodes.push({ x: random() * width, y: random() * height, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: (2 + random()) * 1.7 });
   }
   edges = edges.filter(e => e.a < count && e.b < count);
   draw();
@@ -52,21 +58,21 @@ function initNetwork(canvas: HTMLCanvasElement, button: HTMLButtonElement) {
  }
  function draw() {
   ctx.clearRect(0, 0, width, height);
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 1.3;
   for (const edge of edges) {
    const a = nodes[edge.a]!, b = nodes[edge.b]!;
    const age = simTime - edge.born;
    const fade = Math.min(1, (edge.life - age) / 3, age / .8);
-   ctx.strokeStyle = `rgba(100,216,203,${Math.max(0, fade) * .17})`;
+   ctx.strokeStyle = `rgba(100,216,203,${Math.max(0, fade) * .3})`;
    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
    if (!reduced.matches && age < .8) {
     const t = age / .8;
-    ctx.save(); ctx.fillStyle = 'rgba(255,176,120,.49)'; ctx.shadowColor = 'rgba(255,176,120,.49)'; ctx.shadowBlur = 10;
+    ctx.save(); ctx.fillStyle = 'rgba(255,176,120,.58)'; ctx.shadowColor = 'rgba(255,176,120,.58)'; ctx.shadowBlur = 12;
     ctx.beginPath(); ctx.arc(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, 3, 0, Math.PI * 2); ctx.fill(); ctx.restore();
    }
   }
   nodes.forEach((node, i) => {
-   ctx.fillStyle = 'rgba(100,216,203,.31)';
+   ctx.fillStyle = 'rgba(100,216,203,.5)';
    ctx.beginPath(); ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2); ctx.fill();
    // One subtly distinct AI ring, present briefly once per cycle. Static under reduced motion.
    const phase = simTime % 35;
@@ -76,6 +82,11 @@ function initNetwork(canvas: HTMLCanvasElement, button: HTMLButtonElement) {
     ctx.beginPath(); ctx.arc(node.x, node.y, node.r + 3, 0, Math.PI * 2); ctx.stroke();
    }
   });
+  // Softly fade decorative marks behind text (feathered, not hard-clipped) to keep contrast.
+  ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+  ctx.shadowColor = 'rgba(0,0,0,.85)'; ctx.shadowBlur = 18; ctx.shadowOffsetX = 10000; ctx.fillStyle = '#000';
+  for (const area of textAreas) ctx.fillRect(area.x - 10000, area.y, area.width, area.height);
+  ctx.restore();
  }
  function tick(now: number) {
   raf = 0;
