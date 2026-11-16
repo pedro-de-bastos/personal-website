@@ -74,18 +74,39 @@ function initNetwork(canvas: HTMLCanvasElement) {
    }
   }
  }
+ function seedPositions(total: number) {
+  // Jittered stratified grid covering the full canvas, with leftover cells spread
+  // across rows instead of left empty at the bottom. Text areas are not excluded.
+  const columns = Math.max(1, Math.ceil(Math.sqrt(total * width / height)));
+  const rows = Math.max(1, Math.ceil(total / columns));
+  const base = Math.floor(total / rows), extra = total % rows;
+  const insetX = Math.min(56, width * .08), insetY = Math.min(48, height * .08);
+  const positions: { x: number; y: number }[] = [];
+  for (let row = 0; row < rows; row++) {
+   const colsInRow = base + (row < extra ? 1 : 0);
+   for (let col = 0; col < colsInRow; col++) {
+    const x = insetX + (col + .5 + (random() - .5) * .56) / colsInRow * (width - insetX * 2);
+    const y = insetY + (row + .5 + (random() - .5) * .56) / rows * (height - insetY * 2);
+    positions.push({ x: clamp(x, insetX, width - insetX), y: clamp(y, insetY, height - insetY) });
+   }
+  }
+  for (let i = positions.length - 1; i > 0; i--) {
+   const j = Math.floor(random() * (i + 1));
+   [positions[i], positions[j]] = [positions[j]!, positions[i]!];
+  }
+  return positions;
+ }
  function initialize(count: number) {
   nodes = []; groups = []; edges = []; encounter = undefined;
   const loners = count <= 20 ? 5 : count <= 36 ? 9 : 14;
   const clusterCount = Math.ceil((count - loners) / 3.8), total = clusterCount + loners;
-  const columns = Math.ceil(Math.sqrt(total * width / height)), rows = Math.ceil(total / columns);
+  const positions = seedPositions(total);
   let remaining = count - loners;
+  // Sizes are assigned after the shuffle so clusters are not all in the first rows.
   for (let i = 0; i < total; i++) {
    const size = i < clusterCount ? Math.ceil(remaining / (clusterCount - i)) : 1;
    if (i < clusterCount) remaining -= size;
-   const row = Math.floor(i / columns);
-   const group = makeGroup((i % columns + .5 + (row % 2 ? .18 : 0) + (random() - .5) * .34) * width / columns,
-    (row + .5 + (random() - .5) * .34) * height / rows);
+   const at = positions[i]!, group = makeGroup(at.x, at.y);
    const indices: number[] = [];
    for (let j = 0; j < size; j++) {
     indices.push(nodes.length);
@@ -139,7 +160,7 @@ function initNetwork(canvas: HTMLCanvasElement) {
      return size < 5 && (size > 1 || newGroups.has(g.id));
     });
     if (!group) {
-     group = makeGroup(width * (.12 + random() * .76), height * (.15 + random() * .7));
+     group = makeGroup(width * (.08 + random() * .84), height * (.08 + random() * .84));
      newGroups.add(group.id);
     }
     const index = nodes.length;
