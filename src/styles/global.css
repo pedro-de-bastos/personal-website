@@ -182,6 +182,25 @@ p+p {
 .prose {
   max-width:65ch
 }
+.about-body {
+  display:flex;
+  gap:1.5rem 2rem;
+  align-items:flex-start
+}
+.portrait {
+  flex:0 0 140px;
+  width:140px;
+  height:140px;
+  margin:0
+}
+.portrait img {
+  display:block;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  object-fit:cover;
+  box-shadow:0 0 0 1px #8ba6bb45
+}
 .section-intro {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -329,6 +348,16 @@ footer {
   }
 }
 @media(max-width:400px) {
+  .about-body {
+    flex-direction:column
+  }
+  .portrait,.portrait img {
+    width:120px;
+    height:120px
+  }
+  .portrait {
+    flex-basis:120px
+  }
   .site-header nav {
     gap:1rem
   }

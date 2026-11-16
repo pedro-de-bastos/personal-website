@@ -16,7 +16,7 @@ function initNetwork(canvas: HTMLCanvasElement) {
  let nodes: Node[] = [], edges: Edge[] = [], groups: Group[] = [];
  let encounter: Encounter | undefined;
  let textAreas: { x: number; y: number; width: number; height: number }[] = [];
- let width = 1, height = 1, dpr = 1, simTime = 0, nextEncounter = 7, nextSplit = 42, groupId = 0;
+ let width = 1, height = 1, dpr = 1, simTime = 0, nextEncounter = 2.8, nextSplit = 42, groupId = 0;
  let raf = 0, previous = 0, rendered = 0, visible = false, disposed = false;
  const members = (id: number) => nodes.flatMap((node, i) => node.group === id ? [i] : []);
  const degree = (i: number) => edges.filter(e => e.a === i || e.b === i).length;
@@ -28,13 +28,15 @@ function initNetwork(canvas: HTMLCanvasElement) {
   return group;
  }
  function arrange(group: Group, indices: number[]) {
-  // Local resting positions retain air between members; springs relax toward them after a merge.
-  const radius = indices.length === 1 ? 0 : (width < 640 ? 24 : 32) + indices.length * 2;
+  // Irregular rest positions, so groups look like people standing together rather than polygons.
+  const base = indices.length === 1 ? 0 : (width < 640 ? 22 : 30) + indices.length * 2;
   const phase = random() * Math.PI * 2;
   indices.forEach((index, slot) => {
-   const node = nodes[index]!, angle = phase + slot / indices.length * Math.PI * 2;
+   const node = nodes[index]!;
+   const angle = phase + slot / indices.length * Math.PI * 2 + (random() - .5) * .85;
+   const radius = base * (.55 + random() * .8);
    node.group = group.id;
-   node.ox = Math.cos(angle) * radius; node.oy = Math.sin(angle) * radius * .8;
+   node.ox = Math.cos(angle) * radius; node.oy = Math.sin(angle) * radius * (.7 + random() * .4);
   });
  }
  function formEdge(a: number, b: number, persistent = false, seeded = false) {
@@ -46,20 +48,44 @@ function initNetwork(canvas: HTMLCanvasElement) {
   return true;
  }
  function seedCluster(indices: number[]) {
-  for (let i = 1; i < indices.length; i++) formEdge(indices[i - 1]!, indices[i]!, true, true);
-  if (indices.length >= 3) formEdge(indices[0]!, indices[indices.length - 1]!, true, true);
+  if (indices.length < 2) return;
+  if (indices.length === 2) { formEdge(indices[0]!, indices[1]!, true, true); return; }
+  const style = random();
+  if (style < .34) {
+   // Open chain, sometimes with one skip so it doesn't read as a polyline glyph.
+   for (let i = 1; i < indices.length; i++) formEdge(indices[i - 1]!, indices[i]!, true, true);
+   if (indices.length >= 4 && random() < .45) {
+    const skip = Math.floor(random() * (indices.length - 2));
+    formEdge(indices[skip]!, indices[skip + 2]!, true, true);
+   }
+  } else if (style < .67) {
+   // Hub-and-spoke, capped at degree 3; leftover members hang off a spoke.
+   const hub = indices[Math.floor(random() * indices.length)]!;
+   const others = indices.filter(i => i !== hub);
+   others.slice(0, 3).forEach(i => formEdge(hub, i, true, true));
+   for (let i = 3; i < others.length; i++) formEdge(others[i - 1]!, others[i]!, true, true);
+   if (others.length >= 3 && random() < .4) formEdge(others[0]!, others[1]!, true, true);
+  } else {
+   // Mixed: a path, maybe a close, maybe a chord — not always a ring.
+   for (let i = 1; i < indices.length; i++) formEdge(indices[i - 1]!, indices[i]!, true, true);
+   if (random() < .45) formEdge(indices[0]!, indices[indices.length - 1]!, true, true);
+   if (indices.length >= 4 && random() < .55) {
+    formEdge(indices[0]!, indices[Math.floor(indices.length / 2)]!, true, true);
+   }
+  }
  }
  function initialize(count: number) {
   nodes = []; groups = []; edges = []; encounter = undefined;
-  const loners = count === 12 ? 2 : 3;
-  const clusterCount = Math.ceil((count - loners) / 4.5), total = clusterCount + loners;
+  const loners = count <= 20 ? 5 : count <= 36 ? 9 : 14;
+  const clusterCount = Math.ceil((count - loners) / 3.8), total = clusterCount + loners;
   const columns = Math.ceil(Math.sqrt(total * width / height)), rows = Math.ceil(total / columns);
   let remaining = count - loners;
   for (let i = 0; i < total; i++) {
    const size = i < clusterCount ? Math.ceil(remaining / (clusterCount - i)) : 1;
    if (i < clusterCount) remaining -= size;
-   const group = makeGroup((i % columns + .5 + (random() - .5) * .16) * width / columns,
-    (Math.floor(i / columns) + .5 + (random() - .5) * .16) * height / rows);
+   const row = Math.floor(i / columns);
+   const group = makeGroup((i % columns + .5 + (row % 2 ? .18 : 0) + (random() - .5) * .34) * width / columns,
+    (row + .5 + (random() - .5) * .34) * height / rows);
    const indices: number[] = [];
    for (let j = 0; j < size; j++) {
     indices.push(nodes.length);
@@ -96,7 +122,7 @@ function initNetwork(canvas: HTMLCanvasElement) {
   dpr = Math.min(devicePixelRatio || 1, 2);
   canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const count = width < 640 ? 12 : width < 1024 ? 20 : 30;
+  const count = width < 640 ? 18 : width < 1024 ? 32 : 54;
   for (const n of nodes) { n.x *= width / oldWidth; n.y *= height / oldHeight; }
   for (const g of groups) { g.x *= width / oldWidth; g.y *= height / oldHeight; }
   if (!nodes.length) initialize(count);
@@ -152,14 +178,14 @@ function initNetwork(canvas: HTMLCanvasElement) {
   }
   candidates.sort((a, b) => a.distance - b.distance);
   const choice = candidates[Math.floor(random() * Math.min(3, candidates.length))];
-  if (choice) encounter = { a: choice.a.id, b: choice.b.id, until: simTime + 38, outcome: random() };
-  nextEncounter = simTime + 8 + random() * 7;
+  if (choice) encounter = { a: choice.a.id, b: choice.b.id, until: simTime + 28, outcome: random() };
+  nextEncounter = simTime + 5 + random() * 5;
  }
  function part(a: Group, b: Group) {
   const dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
   a.vx = -dx / distance * 3; a.vy = -dy / distance * 3;
   b.vx = dx / distance * 3; b.vy = dy / distance * 3;
-  encounter = undefined; nextEncounter = simTime + 8 + random() * 7;
+  encounter = undefined; nextEncounter = simTime + 5 + random() * 5;
  }
  function updateEncounter(dt: number) {
   if (!encounter) return;
@@ -183,8 +209,8 @@ function initNetwork(canvas: HTMLCanvasElement) {
   }
   const dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
   const ease = 1 - Math.exp(-dt * .6);
-  a.vx += (dx / distance * 4.5 - a.vx) * ease; a.vy += (dy / distance * 4.5 - a.vy) * ease;
-  b.vx += (-dx / distance * 4.5 - b.vx) * ease; b.vy += (-dy / distance * 4.5 - b.vy) * ease;
+  a.vx += (dx / distance * 5.5 - a.vx) * ease; a.vy += (dy / distance * 5.5 - a.vy) * ease;
+  b.vx += (-dx / distance * 5.5 - b.vx) * ease; b.vy += (-dy / distance * 5.5 - b.vy) * ease;
  }
  function split() {
   nextSplit = simTime + 38 + random() * 22;
@@ -262,10 +288,10 @@ function initNetwork(canvas: HTMLCanvasElement) {
    if (group.y > height - margin) { group.y = height - margin; group.vy = -Math.abs(group.vy); }
    for (const i of indices) {
     const n = nodes[i]!;
-    const dx = (group.x + n.ox - n.x) * .35, dy = (group.y + n.oy - n.y) * .35;
-    const speed = Math.hypot(dx, dy), limit = speed > 3 ? 3 / speed : 1;
-    n.x = clamp(n.x + (group.vx + dx * limit + Math.sin(simTime * .15 + i) * .7) * dt, 5, width - 5);
-    n.y = clamp(n.y + (group.vy + dy * limit + Math.cos(simTime * .17 + i) * .7) * dt, 5, height - 5);
+    const dx = (group.x + n.ox - n.x) * .22, dy = (group.y + n.oy - n.y) * .22;
+    const speed = Math.hypot(dx, dy), limit = speed > 4 ? 4 / speed : 1;
+    n.x = clamp(n.x + (group.vx + dx * limit + Math.sin(simTime * .32 + i * 1.7) * 1.7) * dt, 5, width - 5);
+    n.y = clamp(n.y + (group.vy + dy * limit + Math.cos(simTime * .27 + i * 1.3) * 1.55) * dt, 5, height - 5);
    }
   }
   if (now - rendered >= 1000 / 30) {

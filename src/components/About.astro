@@ -1,7 +1,24 @@
 ---
 import { content } from '../data/content';
+import { localPath } from '../lib/paths';
 ---
 <section id="about" class="section wrap section-split" aria-labelledby="about-heading">
  <h2 id="about-heading">{content.about.heading}</h2>
- <div class="prose">{content.about.paragraphs.map(p => <p>{p}</p>)}</div>
+ <div class="about-body">
+  <picture class="portrait">
+   <source type="image/avif" srcset={`${localPath('images/pedro-160.avif')} 160w, ${localPath('images/pedro-320.avif')} 320w`} sizes="140px" />
+   <source type="image/webp" srcset={`${localPath('images/pedro-160.webp')} 160w, ${localPath('images/pedro-320.webp')} 320w`} sizes="140px" />
+   <img
+    src={localPath('images/pedro-320.jpg')}
+    srcset={`${localPath('images/pedro-160.jpg')} 160w, ${localPath('images/pedro-320.jpg')} 320w`}
+    sizes="140px"
+    width="140"
+    height="140"
+    alt="Portrait of Pedro Martins de Bastos"
+    decoding="async"
+    loading="lazy"
+   />
+  </picture>
+  <div class="prose">{content.about.paragraphs.map(p => <p>{p}</p>)}</div>
+ </div>
 </section>

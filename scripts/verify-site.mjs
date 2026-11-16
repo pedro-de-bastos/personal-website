@@ -47,13 +47,20 @@ const localList = new URL('./forbidden.local.txt', import.meta.url);
 let forbidden = null;
 try { forbidden = new RegExp((await readFile(localList, 'utf8')).trim(), 'i'); } catch { console.warn('WARN: scripts/forbidden.local.txt not found; private exclusion check skipped.'); }
 if (forbidden) assert(!forbidden.test(html), 'Excluded content in HTML');
+const ogImage = `${site}${base}images/og.jpg`;
 const allowed = new Set([
  'https://arxiv.org/abs/2607.27179','https://arxiv.org/abs/2607.12180','https://arxiv.org/abs/2610.41057',
  'https://doi.org/10.1007/978-3-032-29794-5_21','https://scholar.google.com/citations?user=_rBcP6AAAAAJ',
  'https://orcid.org/0009-0009-8686-7871','https://github.com/pedro-de-bastos',
  'https://www.linkedin.com/in/pedro-martins-de-bastos-31925115b/','mailto:pedrom4@uci.edu',
- `${site}${base}`,
+ `${site}${base}`, ogImage,
 ]);
+assert(html.includes('alt="Portrait of Pedro Martins de Bastos"'), 'Portrait alt text must be present');
+assert(html.includes(`property="og:image" content="${ogImage}"`), 'og:image must be the share card');
+assert(html.includes(`name="twitter:image" content="${ogImage}"`), 'twitter:image must be the share card');
+assert(html.includes('name="twitter:card" content="summary_large_image"'), 'Twitter card type');
+await stat(path.join('dist', 'images/og.jpg'));
+await stat(path.join('dist', 'images/pedro-320.jpg'));
 const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
 for (const [, attr, raw] of html.matchAll(/\b(href|src)="([^"]+)"/g)) {
  const url = decode(raw);

@@ -5,6 +5,7 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 import '../styles/visuals.css';
 const canonical = new URL(localPath(), Astro.site);
+const ogImage = new URL(localPath('images/og.jpg'), Astro.site);
 ---
 <!doctype html>
 <html lang="en">
@@ -13,6 +14,17 @@ const canonical = new URL(localPath(), Astro.site);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content={content.meta.description} />
   <meta name="theme-color" content="#081522" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={content.meta.title} />
+  <meta property="og:description" content={content.meta.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Portrait of Pedro Martins de Bastos" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:image:alt" content="Portrait of Pedro Martins de Bastos" />
   <link rel="canonical" href={canonical} />
   <link rel="icon" type="image/svg+xml" href={localPath('favicon.svg')} />
   <title>{content.meta.title}</title>

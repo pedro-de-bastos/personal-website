@@ -12,7 +12,7 @@ Keep visible copy and research mappings in `src/data/content.ts`. Keep provenanc
 
 Only the three approved papers and AIED workshop service belong in featured work. Preserve author orders in the content file, with **Martins de Bastos, P.** (lowercase de) emphasized. HICSS is “HICSS-60 · Accepted · 2027”; TRAIL and Out of sync are only “Preprint (arXiv)”. No TRAIL repository link.
 
-Exclude all other publications, submissions, review/process metadata, journal venues for preprints, CHI reviewer work, phone/address, employer financial figures or percentages, unverified awards/affiliations, and raw CV/paper assets. No portrait placeholder or CV download. Describe any Vienna work only as research collaborators at the University of Vienna.
+Exclude all other publications, submissions, review/process metadata, journal venues for preprints, CHI reviewer work, phone/address, employer financial figures or percentages, unverified awards/affiliations, and raw CV/paper assets. The About portrait is the approved photograph in `public/images`; do not add a placeholder or a CV download. Describe any Vienna work only as research collaborators at the University of Vienna.
 
 No numerical research encoding without source evidence. HICSS GCA describes whole-team conversations; do not invent human-to-human edge strengths. Uncertain estimates remain uncertain. TRAIL comparisons are descriptive without significance tests; personality controls must not predict outcomes. Out of sync uses endpoint ordering only, with exploratory/configuration qualifications and no fabricated intermediate values.
 
