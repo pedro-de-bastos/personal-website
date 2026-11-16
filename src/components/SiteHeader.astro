@@ -5,5 +5,4 @@ import { localPath } from '../lib/paths';
 <header class="site-header wrap">
  <a class="name-link" href={localPath()}> {content.person.name} </a>
  <nav aria-label={content.ui.nav}>{content.navigation.map(item => <a href={`#${item.id}`}>{item.label}</a>)}</nav>
- <button class="motion-button" data-motion hidden data-pause={content.ui.pause} data-resume={content.ui.resume} data-off={content.ui.motionOff}>{content.ui.pause}</button>
 </header>

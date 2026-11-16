@@ -76,7 +76,7 @@ export const content = {
  contact: { heading: 'Get in touch', text: 'Interested in human–AI teams, group communication, or learning analytics? You can reach me by email.', emailLabel: 'Email Pedro' },
  profiles: [ { label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=_rBcP6AAAAAJ' }, { label: 'ORCID', href: 'https://orcid.org/0009-0009-8686-7871' }, { label: 'GitHub', href: 'https://github.com/pedro-de-bastos' }, { label: 'LinkedIn', href: 'https://www.linkedin.com/in/pedro-martins-de-bastos-31925115b/' } ],
  ui: {
-  skip: 'Skip to main content', nav: 'Main navigation', pause: 'Pause background motion', resume: 'Resume background motion', motionOff: 'Background motion is off',
+  skip: 'Skip to main content', nav: 'Main navigation',
   disclaimer: 'Descriptive summary of reported findings', paperLink: 'Read the paper on arXiv', allComparisons: 'All reported comparisons', measure: 'Measure', result: 'Reported result', comparison: 'Comparison', higher: 'Higher', lower: 'Lower', noClear: 'No clear difference', uncertain: 'Uncertain estimate', trajectory: 'Trajectory comparison',
   direction: 'Direction only — spacing does not show effect size.', teamTitle: 'Illustrative team', addAI: 'Add an AI teammate', removeAI: 'All-human team', student: 'Student', ai: 'AI', halo: 'Soft halos represent student belonging.',
   teamEncoding: 'AI participation is compared with students on the same teams. Student participation and belonging are compared with all-human teams.',

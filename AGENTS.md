@@ -6,7 +6,7 @@ Use the existing dependencies; no new packages. Never touch `.env`, secrets, or 
 
 Set `ASTRO_TELEMETRY_DISABLED=1` for all Astro commands. Start the server with `astro dev --background`; manage it with `astro dev stop`, `astro dev status`, and `astro dev logs` (use the installed CLI through `npx`).
 
-Keep visible copy and research mappings in `src/data/content.ts`. Keep provenance build-time only. Scripts must read only public rendered labels and categories. Preserve accessible findings tables when JavaScript is unavailable. Animate interactions over 400–600ms and snap under reduced motion. Background motion must pause off screen, when hidden, and on user request.
+Keep visible copy and research mappings in `src/data/content.ts`. Keep provenance build-time only. Scripts must read only public rendered labels and categories. Preserve accessible findings tables when JavaScript is unavailable. Animate interactions over 400–600ms and snap under reduced motion. Background motion must pause off screen and when hidden, and honor reduced motion. There is no user pause control.
 
 ## Content rules
 

@@ -10,6 +10,8 @@ const html = await readFile('dist/index.html', 'utf8');
 const decode = s => s.replaceAll('&amp;', '&').replaceAll('&#39;', "'").replaceAll('&quot;', '"').replaceAll('&lt;', '<').replaceAll('&gt;', '>');
 const strip = s => decode(s.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 const text = strip(html);
+assert(!/<button\b[^>]*\bdata-motion(?:[\s=>])/i.test(html), 'Background motion button must be absent');
+assert(!/Pause background motion|Resume background motion/.test(html), 'Background motion control copy must be absent');
 const required = [
  'Pedro Martins de Bastos | Human–AI Teaming',
  'Ph.D. Student · Language and Learning Analytics Lab · UC Irvine',

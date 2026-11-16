@@ -107,10 +107,6 @@ p+p {
   font-size:.875rem;
   padding-block:.5rem
 }
-.motion-button {
-  font-size:.75rem;
-  min-height:44px
-}
 .skip-link {
   position:absolute;
   top:.5rem;
@@ -331,9 +327,6 @@ footer {
   .site-header {
     gap:.5rem 1rem
   }
-  .motion-button {
-    margin-left:auto
-  }
 }
 @media(max-width:400px) {
   .site-header nav {
@@ -379,7 +372,7 @@ footer {
     color:black;
     font-size:10pt
   }
-  .network-background,.motion-button,.hero-links,[data-enhance],.skip-link {
+  .network-background,.hero-links,[data-enhance],.skip-link {
     display:none!important
   }
   .hero {
